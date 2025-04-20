@@ -38,11 +38,62 @@ const emailRegisterForm = document.getElementById('email-register-form');
 // Estado de autenticación
 let currentUser = null;
 
+// Crear elemento para mensajes de bienvenida
+const welcomeMessage = document.createElement('div');
+welcomeMessage.className = 'welcome-message';
+welcomeMessage.style.cssText = `
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #46178f;
+    color: white;
+    padding: 15px 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    font-weight: bold;
+    text-align: center;
+    display: none;
+    animation: fadeInOut 4s ease-in-out;
+`;
+
+// Crear estilo para la animación
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes fadeInOut {
+        0% { opacity: 0; transform: translate(-50%, -20px); }
+        15% { opacity: 1; transform: translate(-50%, 0); }
+        85% { opacity: 1; transform: translate(-50%, 0); }
+        100% { opacity: 0; transform: translate(-50%, -20px); }
+    }
+`;
+document.head.appendChild(style);
+document.body.appendChild(welcomeMessage);
+
+// Función para mostrar mensaje de bienvenida
+function showWelcomeMessage(name) {
+    welcomeMessage.textContent = `¡Bienvenido a OJJ1:9, ${name}! 🎮`;
+    welcomeMessage.style.display = 'block';
+    
+    // Ocultar mensaje después de la animación
+    setTimeout(() => {
+        welcomeMessage.style.display = 'none';
+    }, 4000);
+}
+
 // Comprobar si el usuario está autenticado
 auth.onAuthStateChanged(user => {
     if (user) {
         currentUser = user;
         showUserProfile(user);
+        
+        // Mostrar mensaje de bienvenida solo si es un inicio de sesión nuevo
+        if (sessionStorage.getItem('newLogin') === 'true') {
+            const displayName = user.displayName || user.email || 'Invitado';
+            showWelcomeMessage(displayName);
+            sessionStorage.removeItem('newLogin');
+        }
     } else {
         hideUserProfile();
     }
@@ -53,7 +104,7 @@ function showUserProfile(user) {
     if (loginBtn) loginBtn.classList.add('hidden');
     if (userProfile) {
         userProfile.classList.remove('hidden');
-        userName.textContent = user.displayName || user.email.split('@')[0];
+        userName.textContent = user.displayName || user.email || 'Invitado';
         userAvatar.src = user.photoURL || 'https://via.placeholder.com/40';
     }
 }
@@ -62,6 +113,29 @@ function showUserProfile(user) {
 function hideUserProfile() {
     if (loginBtn) loginBtn.classList.remove('hidden');
     if (userProfile) userProfile.classList.add('hidden');
+}
+
+// Función para inicio de sesión anónimo con nombre personalizado
+function signInAnonymously(displayName = 'Invitado') {
+    auth.signInAnonymously()
+        .then((userCredential) => {
+            // Marcar como nuevo inicio de sesión
+            sessionStorage.setItem('newLogin', 'true');
+            
+            // Actualizar perfil con nombre personalizado
+            return userCredential.user.updateProfile({
+                displayName: displayName
+            });
+        })
+        .then(() => {
+            console.log('Usuario anónimo conectado');
+            loginModal.classList.add('hidden');
+            registerModal.classList.add('hidden');
+        })
+        .catch((error) => {
+            console.error('Error al iniciar sesión anónima:', error);
+            alert('Error al iniciar sesión. Inténtalo de nuevo.');
+        });
 }
 
 // Eventos de botones
@@ -113,44 +187,61 @@ if (enterGameBtn) {
             return;
         }
         
-        // Verificar si el PIN existe
-        db.collection('game_sessions')
-            .where('game_pin', '==', pin)
-            .where('status', '==', 'waiting')
-            .get()
-            .then(snapshot => {
-                if (snapshot.empty) {
-                    alert('PIN de juego no válido o el juego ya ha comenzado');
-                    return;
+        // Si no hay usuario, iniciar sesión anónima con el nombre ingresado
+        if (!currentUser) {
+            signInAnonymously(playerName);
+            // Esperar a que se complete el inicio de sesión
+            const unsubscribe = auth.onAuthStateChanged(user => {
+                if (user) {
+                    unsubscribe();
+                    continueJoinGame(pin, playerName);
                 }
-                
-                const gameSession = snapshot.docs[0];
-                
-                // Guardar información en localStorage para la página de juego
-                localStorage.setItem('gamePin', pin);
-                localStorage.setItem('playerName', playerName);
-                localStorage.setItem('gameSessionId', gameSession.id);
-                
-                // Registrar al jugador en la sesión de juego
-                return db.collection('participants').add({
-                    game_session_id: gameSession.id,
-                    user_id: currentUser ? currentUser.uid : null,
-                    nickname: playerName,
-                    score: 0,
-                    created_at: firebase.firestore.FieldValue.serverTimestamp()
-                });
-            })
-            .then(participantRef => {
-                if (participantRef) {
-                    localStorage.setItem('participantId', participantRef.id);
-                    window.location.href = 'play-game.html';
-                }
-            })
-            .catch(error => {
-                console.error('Error al unirse al juego:', error);
-                alert('Error al unirse al juego. Inténtalo de nuevo.');
             });
+        } else {
+            continueJoinGame(pin, playerName);
+        }
     });
+}
+
+// Función para continuar el proceso de unirse al juego
+function continueJoinGame(pin, playerName) {
+    // Verificar si el PIN existe
+    db.collection('game_sessions')
+        .where('game_pin', '==', pin)
+        .where('status', '==', 'waiting')
+        .get()
+        .then(snapshot => {
+            if (snapshot.empty) {
+                alert('PIN de juego no válido o el juego ya ha comenzado');
+                return;
+            }
+            
+            const gameSession = snapshot.docs[0];
+            
+            // Guardar información en localStorage para la página de juego
+            localStorage.setItem('gamePin', pin);
+            localStorage.setItem('playerName', playerName);
+            localStorage.setItem('gameSessionId', gameSession.id);
+            
+            // Registrar al jugador en la sesión de juego
+            return db.collection('participants').add({
+                game_session_id: gameSession.id,
+                user_id: currentUser ? currentUser.uid : null,
+                nickname: playerName,
+                score: 0,
+                created_at: firebase.firestore.FieldValue.serverTimestamp()
+            });
+        })
+        .then(participantRef => {
+            if (participantRef) {
+                localStorage.setItem('participantId', participantRef.id);
+                window.location.href = 'play-game.html';
+            }
+        })
+        .catch(error => {
+            console.error('Error al unirse al juego:', error);
+            alert('Error al unirse al juego. Inténtalo de nuevo.');
+        });
 }
 
 // Eventos de modales
@@ -187,32 +278,37 @@ window.addEventListener('click', e => {
     }
 });
 
-// Autenticación con Google
+// Autenticación con Google (ahora usa directamente autenticación anónima)
 if (googleLoginBtn) {
     googleLoginBtn.addEventListener('click', () => {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        auth.signInWithPopup(provider)
-            .then(result => {
-                loginModal.classList.add('hidden');
-            })
-            .catch(error => {
-                console.error('Error al iniciar sesión con Google:', error);
-                alert('Error al iniciar sesión con Google. Inténtalo de nuevo.');
-            });
+        // Obtener nombre del formulario si está disponible
+        const emailInput = document.getElementById('email');
+        let displayName = 'Invitado';
+        
+        if (emailInput && emailInput.value) {
+            const emailParts = emailInput.value.split('@');
+            if (emailParts.length > 0) {
+                displayName = emailParts[0];
+            }
+        }
+        
+        // Usar autenticación anónima directamente
+        signInAnonymously(displayName);
     });
 }
 
 if (googleRegisterBtn) {
     googleRegisterBtn.addEventListener('click', () => {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        auth.signInWithPopup(provider)
-            .then(result => {
-                registerModal.classList.add('hidden');
-            })
-            .catch(error => {
-                console.error('Error al registrarse con Google:', error);
-                alert('Error al registrarse con Google. Inténtalo de nuevo.');
-            });
+        // Obtener nombre del formulario de registro
+        const nameInput = document.getElementById('reg-name');
+        let displayName = 'Invitado';
+        
+        if (nameInput && nameInput.value) {
+            displayName = nameInput.value;
+        }
+        
+        // Usar autenticación anónima directamente
+        signInAnonymously(displayName);
     });
 }
 
@@ -222,6 +318,9 @@ if (emailLoginForm) {
         e.preventDefault();
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
+        
+        // Marcar como nuevo inicio de sesión
+        sessionStorage.setItem('newLogin', 'true');
         
         auth.signInWithEmailAndPassword(email, password)
             .then(userCredential => {
@@ -246,6 +345,9 @@ if (emailRegisterForm) {
             alert('Las contraseñas no coinciden');
             return;
         }
+        
+        // Marcar como nuevo inicio de sesión
+        sessionStorage.setItem('newLogin', 'true');
         
         auth.createUserWithEmailAndPassword(email, password)
             .then(userCredential => {
