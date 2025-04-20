@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presentar Juego - OJJ1:9</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+</head>
+<body class="host-game-body">
+    <div class="container">
+        <header class="game-header">
+            <div class="logo">
+                <h1>OJJ1:9</h1>
+            </div>
+            <div class="game-info">
+                <h2 id="quiz-title">Cargando cuestionario...</h2>
+                <div id="game-pin-display">
+                    <span>PIN del juego:</span>
+                    <span id="game-pin" class="pin">000000</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="host-game-main">
+            <div id="lobby-screen" class="game-screen">
+                <h2>Sala de espera</h2>
+                <p>Los jugadores pueden unirse usando el PIN del juego</p>
+                <div class="players-container">
+                    <h3>Jugadores: <span id="player-count">0</span></h3>
+                    <div id="players-list" class="players-list">
+                        <!-- Los jugadores se agregarán aquí dinámicamente -->
+                    </div>
+                </div>
+                <button id="start-game-btn" class="btn btn-primary" disabled>Iniciar juego</button>
+            </div>
+
+            <div id="question-screen" class="game-screen hidden">
+                <div class="question-countdown">
+                    <div id="countdown-timer" class="countdown-timer">30</div>
+                </div>
+                <div class="question-display">
+                    <h2 id="current-question">¿Pregunta?</h2>
+                    <div id="question-image" class="question-image hidden">
+                        <img src="/placeholder.svg" alt="Imagen de la pregunta">
+                    </div>
+                </div>
+                <div class="answers-grid">
+                    <div class="answer-block answer-red">
+                        <span class="answer-text" id="answer-0">Respuesta 1</span>
+                    </div>
+                    <div class="answer-block answer-blue">
+                        <span class="answer-text" id="answer-1">Respuesta 2</span>
+                    </div>
+                    <div class="answer-block answer-yellow">
+                        <span class="answer-text" id="answer-2">Respuesta 3</span>
+                    </div>
+                    <div class="answer-block answer-green">
+                        <span class="answer-text" id="answer-3">Respuesta 4</span>
+                    </div>
+                </div>
+                <div class="player-answers-count">
+                    <span id="answers-count">0</span> / <span id="total-players">0</span> respuestas
+                </div>
+            </div>
+
+            <div id="answer-results-screen" class="game-screen hidden">
+                <h2>Resultados</h2>
+                <div class="correct-answer-display">
+                    <h3>Respuesta correcta:</h3>
+                    <div id="correct-answer" class="answer-block">Respuesta correcta</div>
+                </div>
+                <div class="answer-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Respuestas correctas:</span>
+                        <span id="correct-count" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Respuestas incorrectas:</span>
+                        <span id="incorrect-count" class="stat-value">0</span>
+                    </div>
+                </div>
+                <button id="next-question-btn" class="btn btn-primary">Siguiente pregunta</button>
+            </div>
+
+            <div id="final-results-screen" class="game-screen hidden">
+                <h2>¡Juego terminado!</h2>
+                <div class="podium">
+                    <div class="podium-item" id="second-place">
+                        <div class="podium-player">
+                            <span class="player-name">2º lugar</span>
+                            <span class="player-score">0</span>
+                        </div>
+                        <div class="podium-block podium-second"></div>
+                    </div>
+                    <div class="podium-item" id="first-place">
+                        <div class="podium-player">
+                            <span class="player-name">1er lugar</span>
+                            <span class="player-score">0</span>
+                        </div>
+                        <div class="podium-block podium-first"></div>
+                    </div>
+                    <div class="podium-item" id="third-place">
+                        <div class="podium-player">
+                            <span class="player-name">3er lugar</span>
+                            <span class="player-score">0</span>
+                        </div>
+                        <div class="podium-block podium-third"></div>
+                    </div>
+                </div>
+                <div class="scoreboard">
+                    <h3>Tabla de puntuaciones</h3>
+                    <div id="final-scores-list" class="scores-list">
+                        <!-- Las puntuaciones se agregarán aquí dinámicamente -->
+                    </div>
+                </div>
+                <div class="final-actions">
+                    <button id="play-again-btn" class="btn btn-primary">Jugar de nuevo</button>
+                    <button id="back-to-home-btn" class="btn btn-secondary">Volver al inicio</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="host-game.js"></script>
+</body>
+</html>

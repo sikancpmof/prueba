@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Cuestionario - OJJ1:9</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <h1><a href="index.html">OJJ1:9</a></h1>
+            </div>
+            <div id="user-info">
+                <div id="user-profile">
+                    <img id="user-avatar" src="placeholder.svg" alt="Avatar">
+                    <span id="user-name">Usuario</span>
+                    <button id="logout-btn" class="btn btn-small">Salir</button>
+                </div>
+            </div>
+        </header>
+
+        <main class="create-quiz-main">
+            <div class="quiz-header">
+                <h2>Crear nuevo cuestionario</h2>
+                <div class="quiz-details">
+                    <input type="text" id="quiz-title" placeholder="Título del cuestionario" required>
+                    <textarea id="quiz-description" placeholder="Descripción (opcional)"></textarea>
+                </div>
+            </div>
+
+            <div class="questions-container" id="questions-container">
+                <!-- Las preguntas se agregarán aquí dinámicamente -->
+            </div>
+
+            <button id="add-question-btn" class="btn btn-add">+ Agregar pregunta</button>
+
+            <div class="quiz-actions">
+                <button id="save-quiz-btn" class="btn btn-primary">Guardar cuestionario</button>
+                <button id="cancel-quiz-btn" class="btn btn-secondary">Cancelar</button>
+            </div>
+        </main>
+
+        <footer>
+            <p>OJJ1:9 - Inspirado en Kahoot - Creado para jóvenes de la iglesia</p>
+        </footer>
+    </div>
+
+    <!-- Plantilla para nuevas preguntas -->
+    <template id="question-template">
+        <div class="question-card">
+            <div class="question-header">
+                <h3>Pregunta <span class="question-number">1</span></h3>
+                <div class="question-controls">
+                    <select class="time-limit">
+                        <option value="10">10 segundos</option>
+                        <option value="20">20 segundos</option>
+                        <option value="30" selected>30 segundos</option>
+                        <option value="60">60 segundos</option>
+                        <option value="90">90 segundos</option>
+                        <option value="120">2 minutos</option>
+                    </select>
+                    <button class="btn btn-delete delete-question">Eliminar</button>
+                </div>
+            </div>
+            <div class="question-content">
+                <input type="text" class="question-text" placeholder="Escribe tu pregunta aquí" required>
+                <div class="question-image-upload">
+                    <label for="question-image">Imagen (opcional):</label>
+                    <input type="file" class="question-image" accept="image/*">
+                    <div class="image-preview"></div>
+                </div>
+            </div>
+            <div class="answers-container">
+                <div class="answer answer-red">
+                    <input type="text" class="answer-text" placeholder="Respuesta 1" required>
+                    <label class="correct-answer">
+                        <input type="radio" name="correct-1" value="0" checked>
+                        Correcta
+                    </label>
+                </div>
+                <div class="answer answer-blue">
+                    <input type="text" class="answer-text" placeholder="Respuesta 2" required>
+                    <label class="correct-answer">
+                        <input type="radio" name="correct-1" value="1">
+                        Correcta
+                    </label>
+                </div>
+                <div class="answer answer-yellow">
+                    <input type="text" class="answer-text" placeholder="Respuesta 3" required>
+                    <label class="correct-answer">
+                        <input type="radio" name="correct-1" value="2">
+                        Correcta
+                    </label>
+                </div>
+                <div class="answer answer-green">
+                    <input type="text" class="answer-text" placeholder="Respuesta 4" required>
+                    <label class="correct-answer">
+                        <input type="radio" name="correct-1" value="3">
+                        Correcta
+                    </label>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script src="create-quiz.js"></script>
+</body>
+</html>

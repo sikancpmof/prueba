@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jugar - OJJ1:9</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+</head>
+<body class="play-game-body">
+    <div class="container">
+        <header class="game-header player-header">
+            <div class="logo">
+                <h1>OJJ1:9</h1>
+            </div>
+            <div class="player-info">
+                <span id="player-name">Jugador</span>
+                <span id="player-score">0 pts</span>
+            </div>
+        </header>
+
+        <main class="play-game-main">
+            <div id="waiting-screen" class="game-screen">
+                <h2>¡Te has unido al juego!</h2>
+                <p>Esperando a que el anfitrión inicie el juego...</p>
+                <div class="player-avatar">
+                    <div class="avatar-circle">
+                        <span id="player-initial">J</span>
+                    </div>
+                </div>
+                <p id="waiting-message" class="waiting-message">Prepárate para jugar</p>
+            </div>
+
+            <div id="question-screen" class="game-screen hidden">
+                <div class="question-countdown">
+                    <div id="countdown-timer" class="countdown-timer">30</div>
+                </div>
+                <div class="player-question-info">
+                    <span id="question-number">Pregunta 1/10</span>
+                </div>
+                <div class="answers-grid player-answers">
+                    <button class="answer-block answer-red" id="player-answer-0">
+                        <span class="answer-text">Respuesta 1</span>
+                    </button>
+                    <button class="answer-block answer-blue" id="player-answer-1">
+                        <span class="answer-text">Respuesta 2</span>
+                    </button>
+                    <button class="answer-block answer-yellow" id="player-answer-2">
+                        <span class="answer-text">Respuesta 3</span>
+                    </button>
+                    <button class="answer-block answer-green" id="player-answer-3">
+                        <span class="answer-text">Respuesta 4</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="answer-waiting-screen" class="game-screen hidden">
+                <h2>¡Respuesta enviada!</h2>
+                <div class="answer-waiting-animation">
+                    <div class="spinner"></div>
+                </div>
+                <p>Esperando a que todos respondan...</p>
+            </div>
+
+            <div id="answer-result-screen" class="game-screen hidden">
+                <div id="correct-answer-screen" class="result-screen">
+                    <h2>¡Respuesta correcta!</h2>
+                    <div class="result-icon correct">✓</div>
+                    <div class="points-earned">
+                        <span>+</span><span id="points-earned">0</span> puntos
+                    </div>
+                </div>
+                <div id="wrong-answer-screen" class="result-screen hidden">
+                    <h2>Respuesta incorrecta</h2>
+                    <div class="result-icon incorrect">✗</div>
+                    <div class="correct-was">
+                        <span>La respuesta correcta era:</span>
+                        <div id="correct-answer-text" class="correct-answer-text">Respuesta correcta</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="game-over-screen" class="game-screen hidden">
+                <h2>¡Juego terminado!</h2>
+                <div class="final-rank">
+                    <span>Tu posición:</span>
+                    <span id="final-rank-position" class="rank-position">5º</span>
+                    <span>de</span>
+                    <span id="total-players">10</span>
+                </div>
+                <div class="final-score">
+                    <span>Puntuación total:</span>
+                    <span id="final-score" class="final-score-value">0</span>
+                </div>
+                <button id="back-to-home-btn" class="btn btn-primary">Volver al inicio</button>
+            </div>
+        </main>
+    </div>
+
+    <script src="play-game.js"></script>
+</body>
+</html>

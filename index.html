@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OJJ1:9 - Juegos de Preguntas</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <h1>OJJ1:9</h1>
+                <p class="tagline">¡Aprende jugando!</p>
+            </div>
+            <div id="user-info">
+                <button id="login-btn" class="btn btn-login">Iniciar sesión</button>
+                <div id="user-profile" class="hidden">
+                    <img id="user-avatar" src="placeholder.svg" alt="Avatar">
+                    <span id="user-name">Usuario</span>
+                    <button id="logout-btn" class="btn btn-small">Salir</button>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <div class="hero">
+                <div class="hero-content">
+                    <h2>¡Bienvenido a OJJ1:9!</h2>
+                    <p>Crea y juega cuestionarios divertidos para tu grupo de jóvenes</p>
+                    <div class="action-buttons">
+                        <button id="host-btn" class="btn btn-primary">Crear juego</button>
+                        <button id="join-btn" class="btn btn-secondary">Unirse al juego</button>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <img src="placeholder.svg" alt="Jóvenes jugando">
+                </div>
+            </div>
+
+            <div id="join-game-panel" class="panel hidden">
+                <h3>Unirse al juego</h3>
+                <input type="text" id="game-pin" placeholder="Ingresa el PIN del juego" maxlength="6">
+                <input type="text" id="nickname" placeholder="Tu nombre o apodo">
+                <button id="enter-game-btn" class="btn btn-primary">¡Entrar!</button>
+            </div>
+
+            <div class="features">
+                <div class="feature-card">
+                    <div class="feature-icon">📝</div>
+                    <h3>Crea cuestionarios</h3>
+                    <p>Diseña preguntas personalizadas para tu grupo</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎮</div>
+                    <h3>Juega en vivo</h3>
+                    <p>Compite en tiempo real con tus amigos</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🏆</div>
+                    <h3>Gana puntos</h3>
+                    <p>Sube en el ranking y demuestra tu conocimiento</p>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>OJJ1:9 - Inspirado en Kahoot - Creado para jóvenes de la iglesia</p>
+        </footer>
+    </div>
+
+    <div id="login-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Iniciar sesión</h2>
+            <button id="google-login" class="btn btn-google">
+                <img src="google-icon.svg" alt="Google">
+                Continuar con Google
+            </button>
+            <p>O inicia sesión con tu correo:</p>
+            <form id="email-login-form">
+                <input type="email" id="email" placeholder="Correo electrónico" required>
+                <input type="password" id="password" placeholder="Contraseña" required>
+                <button type="submit" class="btn btn-primary">Iniciar sesión</button>
+            </form>
+            <p>¿No tienes cuenta? <a href="#" id="show-register">Regístrate</a></p>
+        </div>
+    </div>
+
+    <div id="register-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Crear cuenta</h2>
+            <button id="google-register" class="btn btn-google">
+                <img src="google-icon.svg" alt="Google">
+                Registrarse con Google
+            </button>
+            <p>O regístrate con tu correo:</p>
+            <form id="email-register-form">
+                <input type="text" id="reg-name" placeholder="Nombre completo" required>
+                <input type="email" id="reg-email" placeholder="Correo electrónico" required>
+                <input type="password" id="reg-password" placeholder="Contraseña" required>
+                <input type="password" id="reg-confirm-password" placeholder="Confirmar contraseña" required>
+                <button type="submit" class="btn btn-primary">Registrarse</button>
+            </form>
+            <p>¿Ya tienes cuenta? <a href="#" id="show-login">Inicia sesión</a></p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
